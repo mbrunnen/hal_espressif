@@ -13,7 +13,7 @@ from pathlib import Path
 
 from textwrap import dedent
 from west.commands import WestCommand
-from west import log
+from west import log, util
 
 ESP_IDF_REMOTE = "https://github.com/zephyrproject-rtos/hal_espressif"
 
@@ -51,16 +51,11 @@ class UpdateTool(WestCommand):
 
     def do_run(self, args, unknown_args):
 
-        module_path = (
-            Path(os.getenv("ZEPHYR_BASE")).absolute()
-            / r".."
-            / "modules"
-            / "hal"
-            / "espressif"
-        )
+        module_path = Path(__file__).resolve().parents[2]
 
         if not module_path.exists():
-            log.die('cannot find espressif project in $ZEPHYR_BASE path')
+            log.die('cannot find espressif project in west workspace {}.'
+                    .format(util.west_topdir()))
 
         if args.command == "update":
             self.update(module_path)
